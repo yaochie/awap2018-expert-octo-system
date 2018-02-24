@@ -198,6 +198,7 @@ class Player(BasePlayer):
         return {k: 0 for k in self.nodes}
 
     def execute_single_turn_actions(self):
+        
         #move to frontier
         for nodes in self.nodes:
             if self.distance_from_frontier()[node] == 0:
