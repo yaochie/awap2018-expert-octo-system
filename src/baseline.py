@@ -42,6 +42,7 @@ class Player(BasePlayer):
         self.list_graph = sorted(list(self.board.nodes(data=True)))
 
         self.frontier = self.get_frontier()
+        self.outer = self.get_outer()
         """
         Insert any player-specific turn initialization code here
         """
@@ -169,7 +170,7 @@ class Player(BasePlayer):
         """
 
         frontier_nodes = []
-        for node in self.owned_frontier:
+        for node in self.outer:
             # count number of neighbors that do not belong to us
             n_neighbors = 0
             for neighbor in self.board.neighbors(node):
