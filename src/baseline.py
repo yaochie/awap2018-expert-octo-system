@@ -199,25 +199,20 @@ class Player(BasePlayer):
 
     def execute_single_turn_actions(self):
 
-        '''
         #move to frontier
         for nodes in self.nodes:
-            neighbors = self.board.neighbors(nodes)
+            if self.distance_from_frontier()[node] == 0:
+                continue #already is on frontier..
 
-            best_neighbor = 
+            self_units = self.board.nodes[nodes]['old_units']            
+            if self_units <= 1:
+                continue #no point in moving
             
-            for n in neighbors:
+            neighbors = self.board.neighbors(nodes)
+            neighbors = filter(lambda x: self.board.nodes[x]['owner'] == self.player_num, neighbors)
+            best_neighbor = min(neighbors, key = lambda x: self.distance_from_frontier()[x])
 
-                min(
-                
-                self_units = self.board.nodes[nodes]['old_units']
-                n_node = self.board.nodes[n]
-                n_units = n_node['old_units']
-                n_owner = n_node['owner']
-
-                if (n_owner != self.player_num) and (self_units > n_units + 1):
-                    self.verify_and_move_unit(nodes, n, self_units - 1)
-        '''
+            self.verify_and_move_unit(nodes, best_neighbor, self_units-1)
         
         #attacking
         for nodes in self.nodes:
