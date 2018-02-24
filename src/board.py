@@ -119,13 +119,13 @@ class Board():
         for node in nodes:
             nodelabels[node] = str(node) + '\n' + str(nodelabels[node]) + '\n'
 
-        if os.uname().sysname == 'Linux':
+        if os.name == 'posix':
             plt.clf()
             
         nx.draw(self.G,pos = pos,node_color = colorlist, vmin = 0, vmax = 1)
         nx.draw_networkx_labels(self.G,pos=pos,labels=nodelabels)
 
-        if os.uname().sysname == 'Linux':        
+        if os.uname().sysname == 'posix':        
             if not hasattr(self, 'fig'):
                 self.fig = plt.gcf()
                 self.fig.show()
