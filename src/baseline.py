@@ -217,7 +217,4 @@ class Player(BasePlayer):
         """
 
         self.execute_single_turn_actions()
-        self.schedule_multi_turn_actions()
-        self.execute_multi_turn_actions()
-        
         return self.dict_moves
