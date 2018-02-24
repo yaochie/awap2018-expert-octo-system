@@ -42,7 +42,7 @@ class Player(BasePlayer):
         self.list_graph = sorted(list(self.board.nodes(data=True)))
 
         self.frontier = self.get_frontier()
-        self.outer = self.get_outer()
+        self.owned_frontier = self.get_outer()
         """
         Insert any player-specific turn initialization code here
         """
@@ -170,7 +170,7 @@ class Player(BasePlayer):
         """
 
         frontier_nodes = []
-        for node in self.outer:
+        for node in self.owned_frontier:
             # count number of neighbors that do not belong to us
             n_neighbors = 0
             for neighbor in self.board.neighbors(node):
@@ -215,27 +215,21 @@ class Player(BasePlayer):
         return distances
 
     def execute_single_turn_actions(self):
-
-        '''
         #move to frontier
         for nodes in self.nodes:
-            neighbors = self.board.neighbors(nodes)
+            if self.distance_from_frontier()[node] == 0:
+                continue #already is on frontier..
 
-            best_neighbor = 
+            self_units = self.board.nodes[nodes]['old_units']            
+            if self_units <= 1:
+                continue #no point in moving
             
-            for n in neighbors:
+            neighbors = self.board.neighbors(nodes)
+            neighbors = filter(lambda x: self.board.nodes[x]['owner'] == self.player_num, neighbors)
+            best_neighbor = min(neighbors, key = lambda x: self.distance_from_frontier()[x])
 
-                min(
-                
-                self_units = self.board.nodes[nodes]['old_units']
-                n_node = self.board.nodes[n]
-                n_units = n_node['old_units']
-                n_owner = n_node['owner']
+            self.verify_and_move_unit(nodes, best_neighbor, self_units-1)
 
-                if (n_owner != self.player_num) and (self_units > n_units + 1):
-                    self.verify_and_move_unit(nodes, n, self_units - 1)
-        '''
-        
         #attacking
         for nodes in self.nodes:
             neighbors = self.board.neighbors(nodes)
