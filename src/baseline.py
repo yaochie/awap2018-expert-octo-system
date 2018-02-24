@@ -185,28 +185,23 @@ class Player(BasePlayer):
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
-    
+    def distance_from_frontier(self, node):
+        raise Exception("unimplemented!")
+
+
 
     def execute_single_turn_actions(self):
         for nodes in self.nodes:
             neighbors = self.board.neighbors(nodes)
             for n in neighbors:
-                self_units =self.board.nodes[nodes]['old_units']
+                
+                self_units = self.board.nodes[nodes]['old_units']
                 n_node = self.board.nodes[n]
                 n_units = n_node['old_units']
                 n_owner = n_node['owner']
 
-                if (n_owner != self.player_num):
-                    # For now, prioritize attacking
-                    if ((n_units + 1) < self_units):
-                        self.verify_and_move_unit(nodes, n, n_units + 1)
-                    else:
-                        self.long_term_attack_targets.add(nodes)    #Maybe I'll get around to it
-
-                    # Protect nodes at risk                
-                    if ((n_owner != None) and (n_owner != self.player_num)):                    
-                        if (n_units > self_units/2):
-                            self.long_term_protect_targets.add(nodes)
+                if (n_owner != self.player_num) and (self_units > n_units + 1):
+                    self.verify_and_move_unit(nodes, n, self_units - 1)
         return
     
     """
