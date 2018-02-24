@@ -244,6 +244,7 @@ class Player(BasePlayer):
 
                 if (n_owner != self.player_num) and (self_units > n_units + 1):
                     self.verify_and_move_unit(nodes, n, self_units - 1)
+                    #assert (nodes in self.owned_frontier)
         return
     
     """

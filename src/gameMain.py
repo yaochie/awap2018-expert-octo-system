@@ -1,5 +1,5 @@
 from __future__ import print_function
-SERVER_MODE = 1
+SERVER_MODE = 0
 import sys
 import os
 
@@ -106,12 +106,12 @@ def run_game(board, players):
             curr_turn[str(1+j)]["placement"] = placements["place"];
 
             # Movement Turn
-            try:
-                curr_player.init_turn(board.G.copy(), nodes, player['gain'])
-                movements = curr_player.player_move_units()
-            except Exception as ex:
-                verbose_print(ex)
-                continue
+            #try:
+            curr_player.init_turn(board.G.copy(), nodes, player['gain'])
+            movements = curr_player.player_move_units()
+            #except Exception as ex:
+            #    verbose_print(ex)
+            #    continue
 
             temp_G, temp_players = board.check_moves(movements, 1+j)
 
