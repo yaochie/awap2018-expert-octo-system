@@ -193,7 +193,7 @@ class Player(BasePlayer):
                 for nxt in self.board[cur]:
                     queue.append((nxt, dist + 1))
         return distances
-
+    
     def execute_single_turn_actions(self):
         
         #move to frontier
@@ -214,17 +214,31 @@ class Player(BasePlayer):
 
         #attacking
         for nodes in self.nodes:
+            self_units = self.board.nodes[nodes]['old_units']
+
+            if self_units <= 1:
+                continue
+
+            can_attack = []
+            
             neighbors = self.board.neighbors(nodes)
             for n in neighbors:
                 
-                self_units = self.board.nodes[nodes]['old_units']
                 n_node = self.board.nodes[n]
                 n_units = n_node['old_units']
                 n_owner = n_node['owner']
 
                 if (n_owner != self.player_num) and (self_units > n_units + 1):
-                    self.verify_and_move_unit(nodes, n, self_units - 1)
-                    #assert (nodes in self.owned_frontier)
+                    can_attack.append((n, n_units +1))
+
+            #do_attack = {}
+            remaining_units = self_units
+            can_attack = sorted(can_attack, key = lambda x: x[1])
+            for (n, units) in can_attack:
+                if remaining_units - units < 1:
+                    break
+                self.verify_and_move_unit(nodes, n, units)
+                remaining_units -= units
         return
     
     """
