@@ -112,6 +112,15 @@ class Player(BasePlayer):
                     frontier.append(neighbor)
         return frontier
 
+    def get_outer(self):
+        outer = []
+        for node in self.nodes:
+            for neighbor in self.board[node]:
+                if self.board.nodes[neighbor]['owner'] != self.player_num:
+                    outer.append(node)
+                    break
+        return outer
+
     """
     Determine number of enemy units connected to this node
     min_val == True: Return minimum number of units needed to take over an adjacent node
