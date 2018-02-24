@@ -196,102 +196,7 @@ class Player(BasePlayer):
                         if (n_units > self_units/2):
                             self.long_term_protect_targets.add(nodes)
         return
-    # TODO: Fix the many logical problems with this function
-    # Missing many edge cases
-    # 1. Circular scheduling
-    # 2. Pathing through unowned nodes
-    # 3. Small viewing window
-    def schedule_multi_turn_actions(self):
-
-        
-        #Calculate all path lengths, even if we don't use it
-        length = nx.all_pairs_shortest_path_length(self.board)
-        list_len = (dict(length)) #(nodeA, {nodeB:dist, nodeC:dist ...})
-
-        for nodes in self.long_term_attack_targets:
-
-            neighbors = self.board.neighbors(nodes)
-            targets = []
-            for n in neighbors:
-                n_node = self.board.nodes[n]
-                if (n_node['owner'] != self.player_num):
-                    targets.append((n, n_node['old_units']))
-
-            if (len(targets) == 0):
-                continue
-
-            targets.sort(key=lambda pair: pair[1])
-
-
-            curr_dists = list_len[nodes] #Dictionary(nodeB:dist, nodeC:dist ...)
-
-            curr_dists = sorted(curr_dists.items(), key=operator.itemgetter(1))
-            curr_dists = filter(lambda d: (d[1] < 5) and (d[1] > 0), curr_dists) #Only focus on nodes between 1 and 4 units away
-            curr_dists = list(curr_dists)
-
-            for n in copy.copy(curr_dists):
-                if (self.board.nodes[n[0]]['owner'] != self.player_num):
-                    curr_dists.remove(n)
-
-            if (len(curr_dists) == 0):
-                continue
-
-            curr_target_num = 0
-            units_needed = targets[0][1]
-            for d in curr_dists:
-                curr_target = targets[curr_target_num]
-                src = d[0]
-                path = list(nx.shortest_path(self.board, src, nodes))
-                path.pop(0)
-                dst = path[-1]
-
-                if (self.board.nodes[dst]['owner'] != self.player_num):
-                    continue
-
-                if ((src not in self.long_term_movements) and (dst not in self.long_term_movements)):
-                    tmp_node = self.board.nodes[src]
-
-                    if ((tmp_node['old_units']-1) == 0):
-                        continue
-                    # TODO: Consider spreading requested units out
-                    # Update: Considered - not gonna do it
-                    mov = list()
-                    req_units = min(tmp_node['old_units']-1, units_needed)
-
-                    mov.append((copy.copy(path), req_units))
-                    self.long_term_movements[src] = mov
-                    units_needed -= self.long_term_movements[src][0][1]
-                if (units_needed <= 0):
-                    curr_target_num = curr_target_num + 1
-                    if (curr_target_num >= len(targets)):
-                        break
-                    units_needed = targets[curr_target_num][1]
-
-
-    def execute_multi_turn_actions(self):        
-        for mov_src in copy.copy(self.long_term_movements): #Work on cached copy of requests
-            actions = self.long_term_movements.pop(mov_src)
-            for act in copy.copy(actions):
-                actions.remove(act)
-                dst = act[0].pop(0)
-
-                if (self.board.nodes[mov_src]['old_units'] <= act[1]):
-                    continue # Throw away requests that are no longer valid
-
-                if (self.board.nodes[mov_src]['owner'] != self.player_num):
-                    continue # Throw away requests that are no longer valid
-
-                self.verify_and_move_unit(mov_src, dst, act[1])
-
-                if (act[0]):
-                    if (dst in self.long_term_movements):
-                        self.long_term_movements[dst].append(copy.copy(act))
-                    else:
-                        self.long_term_movements[dst] = list()
-                        self.long_term_movements[dst].append(copy.copy(act))
-                
-
-
+    
     """
     Called during the move phase to request player moves
     """
@@ -300,12 +205,8 @@ class Player(BasePlayer):
         Insert player logic here to determine where to move your units
         """
 
-        self.execute_single_turn_actions();
-        self.schedule_multi_turn_actions();
-        self.execute_multi_turn_actions();
-
-        #TODO: Consider pruning long_term_*_targets
-        #Update: Considered!
-
+        self.execute_single_turn_actions()
+        self.schedule_multi_turn_actions()
+        self.execute_multi_turn_actions()
         
-        return self.dict_moves #Returns moves built up over the phase. Do not modify!
+        return self.dict_moves
