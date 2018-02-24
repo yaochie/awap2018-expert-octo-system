@@ -86,13 +86,13 @@ def run_game(board, players):
 
             # Placement Turn
 
-            try:
-                curr_player.init_turn(board.G.copy(), nodes, 4 + int(  (1-pow(.9,player['gain']))/(1-.9)   ))
-                placements = curr_player.player_place_units()
-                temp_G, temp_players = board.check_moves(placements, 1+j)
-            except Exception as ex:
-                verbose_print(ex)
-                continue
+            #try:
+            curr_player.init_turn(board.G.copy(), nodes, 4 + int(  (1-pow(.9,player['gain']))/(1-.9)   ))
+            placements = curr_player.player_place_units()
+            temp_G, temp_players = board.check_moves(placements, 1+j)
+            #except Exception as ex:
+            #    verbose_print(ex)
+            #    continue
 
             # Adding placement data into the player key
 
