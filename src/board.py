@@ -122,7 +122,7 @@ class Board():
 
         if sys.platform == 'linux':
             plt.clf()
-        else:
+        elif sys.platform == 'win32':
             fig = plt.gcf()
             fig.clear()
             
@@ -135,9 +135,13 @@ class Board():
                 self.fig.show()
             self.fig.canvas.draw()
 
-        else:
+        elif sys.platform == 'win32':
             fig.canvas.draw()
             #time.sleep(0.05)
+        else:
+            plt.show(block = False)
+            time.sleep(0.2)
+            plt.close()
 
     def check_moves(self, dict_moves, p_id):
         copy_graph = self.G.copy()
