@@ -168,7 +168,7 @@ class Player(BasePlayer):
         while len(assignments) > 0:
             assignments = sorted(
                     assignments,
-                    key=lambda x: remaining_units[x[0]] - x[2] + (5 if self.board.nodes[x[1]]['owner'] is None else 0)
+                    key=lambda x: x[2] - remaining_units[x[0]] + (5 if self.board.nodes[x[1]]['owner'] is None else 0)
             )
 
             remaining_units[assignments[0][0]] -= (assignments[0][2] + 1)
