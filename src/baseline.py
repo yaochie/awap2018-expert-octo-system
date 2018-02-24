@@ -198,7 +198,7 @@ class Player(BasePlayer):
     def distance_from_frontier(self):
         frontier = self.get_frontier()
         distances = {}
-        all_nodes = self.nodes + frontier
+        all_nodes = [n for n in self.nodes] + frontier
         for node in all_nodes:
             queue = []
             queue.append((node, 0))
