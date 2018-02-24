@@ -163,13 +163,19 @@ class Player(BasePlayer):
         #print('assn', assignments)
         
         units_to_place = self.max_units
+        self.max_units_ = self.max_units
         units_to_be_placed = {}
         self.jobs = []
+
+        #print('='*100)
         while len(assignments) > 0:
+            
             assignments = sorted(
                     assignments,
                     key=lambda x: x[2] - remaining_units[x[0]] + (5 if self.board.nodes[x[1]]['owner'] is None else 0)
             )
+
+            #print('assn', assignments, len(assignments))            
 
             remaining_units[assignments[0][0]] -= (assignments[0][2] + 1)
             if remaining_units[assignments[0][0]] < 1:
@@ -184,7 +190,7 @@ class Player(BasePlayer):
             self.jobs.append(assignments[0])
             assignments.pop(0)
 
-        print('jobs', self.jobs)
+        #print('jobs', self.jobs)
             
         if units_to_place > 0:
             if len(self.jobs) > 0:
@@ -196,9 +202,13 @@ class Player(BasePlayer):
                 if assignments[0][0] not in units_to_be_placed:
                     units_to_be_placed[assignments[0][0]] = 0
                 units_to_be_placed[assignments[0][0]] += units_to_place
-                
+
+        total_placed = 0
         for node in units_to_be_placed:
             self.verify_and_place_unit(node, units_to_be_placed[node])
+            total_placed += units_to_be_placed[node]
+
+        #print('units placed:', total_placed, self.max_units_)
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
@@ -242,8 +252,14 @@ class Player(BasePlayer):
             self.verify_and_move_unit(nodes, best_neighbor, self_units-1)
 
         #attacking
+
+
+        attacking_units = 0
         for node, neighbor, units in self.jobs:
             self.verify_and_move_unit(node, neighbor, units)
+            attacking_units += units
+
+        #print('attacking', attacking_units, self.max_units_)            
         # for nodes in self.nodes:
         #     self_units = self.board.nodes[nodes]['old_units']
         #
