@@ -26,7 +26,6 @@ class Player(BasePlayer):
 
         return
 
-
     """
     Called at the start of every placement phase and movement phase.
     """
@@ -38,7 +37,7 @@ class Player(BasePlayer):
         """
         return
 
-
+    
     """
     Looks at the call stack to see who the caller is - can be useful debugging error messages
     """
