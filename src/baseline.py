@@ -135,28 +135,6 @@ class Player(BasePlayer):
         return outer
 
     """
-    Determine number of enemy units connected to this node
-    min_val == True: Return minimum number of units needed to take over an adjacent node
-    min_val == False: Return sum of all enemies adject to this node
-    """
-    def get_enemy_units(self, node, min_val=False):
-        neighbors = self.board.neighbors(node)
-        curr_enemy_count = 0
-        min_count = 9999999
-        for n in neighbors:
-            n_node = self.board.nodes[n]
-            if (n_node['owner'] != self.player_num):
-                min_count = min(min_count, n_node['old_units'])
-                curr_enemy_count += n_node['old_units']
-        if (min_val):
-            if (min_count == 9999999):
-                return 0
-            return min_count
-        return curr_enemy_count
-
-
-
-    """
     Called during the placement phase to request player moves
     """
     def player_place_units(self):
@@ -229,6 +207,7 @@ class Player(BasePlayer):
             
             neighbors = self.board.neighbors(nodes)
             neighbors = filter(lambda x: self.board.nodes[x]['owner'] == self.player_num, neighbors)
+
             best_neighbor = min(neighbors, key = lambda x: self.dist_from_frontier[x])
 
             self.verify_and_move_unit(nodes, best_neighbor, self_units-1)
