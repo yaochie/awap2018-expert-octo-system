@@ -7,6 +7,7 @@ import test_board
 import grid_board
 import circlePoints
 import flower_board
+import time
 
 class Board():
     def __init__(self, board = None):
@@ -116,9 +117,15 @@ class Board():
         for node in nodes:
             nodelabels[node] = str(node) + '\n' + str(nodelabels[node]) + '\n'
 
+        plt.clf()
+            
         nx.draw(self.G,pos = pos,node_color = colorlist, vmin = 0, vmax = 1)
         nx.draw_networkx_labels(self.G,pos=pos,labels=nodelabels)
-        plt.show()
+
+        if not hasattr(self, 'fig'):
+            self.fig = plt.gcf()
+            self.fig.show()#block = False)
+        self.fig.canvas.draw()
 
 
     def check_moves(self, dict_moves, p_id):
