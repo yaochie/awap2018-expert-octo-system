@@ -195,8 +195,24 @@ class Player(BasePlayer):
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
     def distance_from_frontier(self):
-        #implement
-        return {k: 0 for k in self.nodes}
+        frontier = self.get_frontier()
+        distances = {}
+        for node in self.nodes:
+            queue = []
+            queue.append((node, 0))
+            visited = set()
+            while len(queue) > 0:
+                cur, dist = queue[0]
+                queue = queue[1:]
+                if cur in visited:
+                    continue
+                visited.add(cur)
+                if cur in frontier:
+                    distances[cur] = dist
+                    break
+                for nxt in self.board[cur]:
+                    queue.append((nxt, dist + 1))
+        return distances
 
     def execute_single_turn_actions(self):
 
