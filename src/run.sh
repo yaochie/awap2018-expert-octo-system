@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-python3 gameMain.py bestline2 baseline baseline baseline ring
+python3 gameMain.py baseline bestline4 bestline3 bestline2 ring
