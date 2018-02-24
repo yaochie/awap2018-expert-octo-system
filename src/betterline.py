@@ -240,8 +240,8 @@ class Player(BasePlayer):
 
                 used_units = units
                 if i == len(can_attack) - 1 or \
-                        can_attack[i][1] + can_attack[i + 1][1] > remaining_units:
-                    used_units = remaining_units
+                        can_attack[i][1] + can_attack[i + 1][1] >= remaining_units:
+                    used_units = remaining_units - 1
                 self.verify_and_move_unit(nodes, n, used_units)
                 remaining_units -= used_units
         return
