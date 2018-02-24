@@ -43,6 +43,7 @@ class Player(BasePlayer):
 
         self.frontier = self.get_frontier()
         self.owned_frontier = self.get_outer()
+        self.dist_from_frontier = self.distance_from_frontier()
         """
         Insert any player-specific turn initialization code here
         """
@@ -218,8 +219,8 @@ class Player(BasePlayer):
         
         #move to frontier
         for nodes in self.nodes:
-            if nodes in self.get_outer():
-                continue #already is on frontier..
+            if nodes in self.owned_frontier:
+                continue #already is on outer..
 
             self_units = self.board.nodes[nodes]['old_units']            
             if self_units <= 1:
@@ -227,7 +228,7 @@ class Player(BasePlayer):
             
             neighbors = self.board.neighbors(nodes)
             neighbors = filter(lambda x: self.board.nodes[x]['owner'] == self.player_num, neighbors)
-            best_neighbor = min(neighbors, key = lambda x: self.distance_from_frontier()[x])
+            best_neighbor = min(neighbors, key = lambda x: self.dist_from_frontier[x])
 
             self.verify_and_move_unit(nodes, best_neighbor, self_units-1)
 
