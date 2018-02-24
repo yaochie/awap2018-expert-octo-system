@@ -4,6 +4,15 @@ import operator
 import random
 import copy
 import inspect
+from enum import Enum
+from math import ceil
+
+class PlacementPolicies(Enum):
+    SINGLE = 1          # place only on a single node
+    EVEN = 2            # place evenly across all minimum nodes
+
+class MovementPolicies(Enum):
+    AGGRESSIVE = 1      # attack all that can be won
 
 class Player(BasePlayer):
 
@@ -19,10 +28,9 @@ class Player(BasePlayer):
         """
         Insert player-specific initialization code here
         """
-        self.long_term_attack_targets = set() 
-        self.long_term_protect_targets = set()
-        self.long_term_unit_counts = dict() #Contains (prev_enemy_count, curr_enemy_count)
-        self.long_term_movements = dict() # Contains list of nodes to move to
+
+        self.place_policy = PlacementPolicies.SINGLE
+        self.move_policy = MovementPolicies.AGGRESSIVE
 
         return
 
@@ -33,6 +41,8 @@ class Player(BasePlayer):
     def init_turn(self, board, nodes, max_units):
         super().init_turn(board, nodes, max_units)       #Initializes turn-level state variables
         self.list_graph = sorted(list(self.board.nodes(data=True)))
+
+        self.frontier = self.get_frontier()
         """
         Insert any player-specific turn initialization code here
         """
@@ -142,45 +152,34 @@ class Player(BasePlayer):
         Insert player logic here to determine where to place your units
         """
 
-        for target in self.long_term_unit_counts:
-            curr_enemy_count = self.get_enemy_units(target)
-            prev_enemy_count = self.long_term_unit_counts[target][0]
-            self.long_term_unit_counts[target] = (prev_enemy_count, curr_enemy_count)
+        """
+        Given nodes in the frontier, allocate to node with the fewest adjacent nodes
+        that belong to others
+        (most defensible)
+        """
 
-        for target in copy.copy(self.long_term_protect_targets):
-            if (self.board.nodes[target]['owner'] != self.player_num):
-                continue # Oh no, someone took the node before we could protect it 
+        frontier_nodes = []
+        for node in self.owned_frontier:
+            # count number of neighbors that do not belong to us
+            n_neighbors = 0
+            for neighbor in self.board.neighbors(node):
+                if self.board.nodes[neighbor]['owner'] != self.player_num:
+                    n_neighbors += 1
+            frontier_nodes.append((node, n_neighbors))
 
-            if (target in self.long_term_unit_counts):
-                count = self.long_term_unit_counts[target]
-                self.verify_and_place_unit(target, count[1] - count[0])
-                self.long_term_unit_counts[target] = (self.long_term_unit_counts[target][1], self.get_enemy_units(target))
-            else:
-                self.long_term_unit_counts[target] = (0, self.get_enemy_units(target))
-            if (self.long_term_unit_counts[target][1] == 0):
-                self.long_term_unit_counts.pop(target, None)
-                self.long_term_protect_targets.remove(target)
+        frontier_nodes = sorted(frontier_nodes, key=lambda node: node[1])
+        node_to_place, n_neighbors = frontier_nodes[0]
 
-        for target in copy.copy(self.long_term_attack_targets):
-            if (self.board.nodes[target]['owner'] != self.player_num):
-                continue # Oh no, someone took the node before we could attack from it
-
-            if (target in self.long_term_unit_counts):
-                self.long_term_unit_counts[target] = (self.long_term_unit_counts[target][1], self.get_enemy_units(target, True))
-            else:
-                self.long_term_unit_counts[target] = (0, self.get_enemy_units(target, True))
-
-            count = self.long_term_unit_counts[target]
-            new_units = min(count[1] - self.list_graph[target][1]['old_units'] + 2, self.max_units)
-            self.verify_and_place_unit(target, new_units)
-            if (self.long_term_unit_counts[target][1] == 0):
-                self.long_term_unit_counts.pop(target, None)
-                self.long_term_attack_targets.remove(target)
-
-        for i in range(self.max_units, 0, -1):
-            node = random.choice(list(self.nodes))
-            self.verify_and_place_unit(node, 1)
-
+        if self.place_policy == PlacementPolicies.SINGLE:
+            self.verify_and_place_unit(node_to_place, self.max_units)
+        elif self.place_policy == PlacementPolicies.EVEN:
+            nodes = filter(lambda x: x[1] == n_neighbors, frontier_nodes)
+            remaining_units = self.max_units
+            units_per_node = ceil(self.max_units / len(nodes))
+            for node, _ in nodes:
+                to_place = min(remaining_units, units_per_node)
+                self.verify_and_place_unit(node, to_place)
+                remaining_units -= to_place
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
@@ -217,7 +216,7 @@ class Player(BasePlayer):
         """
 
         self.execute_single_turn_actions()
-        self.schedule_multi_turn_actions()
-        self.execute_multi_turn_actions()
+        #self.schedule_multi_turn_actions()
+        #self.execute_multi_turn_actions()
         
         return self.dict_moves
