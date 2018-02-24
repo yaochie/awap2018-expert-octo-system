@@ -196,7 +196,7 @@ class Player(BasePlayer):
             self.jobs.append(assignments[0])
             assignments.pop(0)
 
-        print('jobs', self.jobs)
+#        print('jobs', self.jobs)
             
         if units_to_place > 0:
             if len(self.jobs) > 0:
