@@ -34,7 +34,6 @@ class Player(BasePlayer):
 
         return
 
-
     """
     Called at the start of every placement phase and movement phase.
     """
@@ -48,7 +47,7 @@ class Player(BasePlayer):
         """
         return
 
-
+    
     """
     Looks at the call stack to see who the caller is - can be useful debugging error messages
     """
@@ -63,19 +62,20 @@ class Player(BasePlayer):
     """
     def verify_and_place_unit(self, node, amount):
         if (self.list_graph[node] is None):
-            print("Error: Node does not exist in list_graph")
+            raise Exception("Error: Node does not exist in list_graph")
             return
 
         if (self.list_graph[node][1]['owner'] != self.player_num):
-            print("Error: You do not own this node you are placing into")
+            raise Exception("Error: You do not own this node you are placing into")
             self.find_caller()
             return
 
         if (amount <= 0):
+            raise Exception("you are not placing any nodes...")
             return
 
         if (amount > self.max_units):
-            print("Error: You are trying to place too many units")
+            raise Exception("Error: You are trying to place too many units")
             return
 
         super().place_unit(node, amount)
@@ -86,25 +86,26 @@ class Player(BasePlayer):
     """
     def verify_and_move_unit(self, start, end, amount):
         if (amount <= 0):
+            raise Exception("you are not placing any nodes...")
             return
 
         start_node = self.list_graph[start]
         end_node = self.list_graph[end]
 
         if ((start is None) or (end is None)):
-            print("Error: Node does not exist in list_graph")
+            raise Exception("Error: Node does not exist in list_graph")
             return
 
         if (start_node[1]['owner'] != self.player_num):
-            print("Error: You do not own this node you are starting from")
+            raise Exception("Error: You do not own this node you are starting from")
             return
 
         if (start == end):
+            raise Exception("start == end")
             return
 
         if (start_node[1]['old_units'] <= amount):
-            print("Error: You do not have enough units to execute this movement")
-            print("You are requesting", amount, "units, but you only have ", start_node[1]['old_units'], 'units')
+            raise Exception("You are requesting", amount, "units, but you only have ", start_node[1]['old_units'], 'units')
             self.find_caller()
             return
 
@@ -183,28 +184,23 @@ class Player(BasePlayer):
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
-    
+    def distance_from_frontier(self, node):
+        raise Exception("unimplemented!")
+
+
 
     def execute_single_turn_actions(self):
         for nodes in self.nodes:
             neighbors = self.board.neighbors(nodes)
             for n in neighbors:
-                self_units =self.board.nodes[nodes]['old_units']
+                
+                self_units = self.board.nodes[nodes]['old_units']
                 n_node = self.board.nodes[n]
                 n_units = n_node['old_units']
                 n_owner = n_node['owner']
 
-                if (n_owner != self.player_num):
-                    # For now, prioritize attacking
-                    if ((n_units + 1) < self_units):
-                        self.verify_and_move_unit(nodes, n, n_units + 1)
-                    else:
-                        self.long_term_attack_targets.add(nodes)    #Maybe I'll get around to it
-
-                    # Protect nodes at risk                
-                    if ((n_owner != None) and (n_owner != self.player_num)):                    
-                        if (n_units > self_units/2):
-                            self.long_term_protect_targets.add(nodes)
+                if (n_owner != self.player_num) and (self_units > n_units + 1):
+                    self.verify_and_move_unit(nodes, n, self_units - 1)
         return
     
     """
@@ -216,7 +212,4 @@ class Player(BasePlayer):
         """
 
         self.execute_single_turn_actions()
-        #self.schedule_multi_turn_actions()
-        #self.execute_multi_turn_actions()
-        
         return self.dict_moves
