@@ -52,19 +52,20 @@ class Player(BasePlayer):
     """
     def verify_and_place_unit(self, node, amount):
         if (self.list_graph[node] is None):
-            print("Error: Node does not exist in list_graph")
+            raise Exception("Error: Node does not exist in list_graph")
             return
 
         if (self.list_graph[node][1]['owner'] != self.player_num):
-            print("Error: You do not own this node you are placing into")
+            raise Exception("Error: You do not own this node you are placing into")
             self.find_caller()
             return
 
         if (amount <= 0):
+            raise Exception("you are not placing any nodes...")
             return
 
         if (amount > self.max_units):
-            print("Error: You are trying to place too many units")
+            raise Exception("Error: You are trying to place too many units")
             return
 
         super().place_unit(node, amount)
@@ -75,25 +76,26 @@ class Player(BasePlayer):
     """
     def verify_and_move_unit(self, start, end, amount):
         if (amount <= 0):
+            raise Exception("you are not placing any nodes...")
             return
 
         start_node = self.list_graph[start]
         end_node = self.list_graph[end]
 
         if ((start is None) or (end is None)):
-            print("Error: Node does not exist in list_graph")
+            raise Exception("Error: Node does not exist in list_graph")
             return
 
         if (start_node[1]['owner'] != self.player_num):
-            print("Error: You do not own this node you are starting from")
+            raise Exception("Error: You do not own this node you are starting from")
             return
 
         if (start == end):
+            raise Exception("start == end")
             return
 
         if (start_node[1]['old_units'] <= amount):
-            print("Error: You do not have enough units to execute this movement")
-            print("You are requesting", amount, "units, but you only have ", start_node[1]['old_units'], 'units')
+            raise Exception("You are requesting", amount, "units, but you only have ", start_node[1]['old_units'], 'units')
             self.find_caller()
             return
 
