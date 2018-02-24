@@ -234,11 +234,16 @@ class Player(BasePlayer):
             #do_attack = {}
             remaining_units = self_units
             can_attack = sorted(can_attack, key = lambda x: x[1])
-            for (n, units) in can_attack:
+            for i, (n, units) in enumerate(can_attack):
                 if remaining_units - units < 1:
                     break
-                self.verify_and_move_unit(nodes, n, units)
-                remaining_units -= units
+
+                used_units = units
+                if i == len(can_attack) - 1 or \
+                        can_attack[i][1] + can_attack[i + 1][1] > remaining_units:
+                    used_units = remaining_units
+                self.verify_and_move_unit(nodes, n, used_units)
+                remaining_units -= used_units
         return
     
     """
