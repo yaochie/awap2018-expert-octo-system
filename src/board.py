@@ -122,6 +122,9 @@ class Board():
 
         if sys.platform == 'linux':
             plt.clf()
+        else:
+            fig = plt.gcf()
+            fig.clear()
             
         nx.draw(self.G,pos = pos,node_color = colorlist, vmin = 0, vmax = 1)
         nx.draw_networkx_labels(self.G,pos=pos,labels=nodelabels)
@@ -133,9 +136,8 @@ class Board():
             self.fig.canvas.draw()
 
         else:
-            plt.show(block = False)
-            time.sleep(0.2)
-            plt.close()
+            fig.canvas.draw()
+            #time.sleep(0.05)
 
     def check_moves(self, dict_moves, p_id):
         copy_graph = self.G.copy()
