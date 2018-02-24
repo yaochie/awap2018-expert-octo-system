@@ -189,8 +189,12 @@ class Player(BasePlayer):
         if units_to_place > 0:
             if len(self.jobs) > 0:
                 self.jobs[0][2] += units_to_place
+                if self.jobs[0][0] not in units_to_be_placed:
+                    units_to_be_placed[self.jobs[0][0]] = 0
                 units_to_be_placed[self.jobs[0][0]] += units_to_place
             else:
+                if assignments[0][0] not in units_to_be_placed:
+                    units_to_be_placed[assignments[0][0]] = 0
                 units_to_be_placed[assignments[0][0]] += units_to_place
                 
         for node in units_to_be_placed:
