@@ -42,6 +42,7 @@ class Player(BasePlayer):
         self.list_graph = sorted(list(self.board.nodes(data=True)))
 
         self.frontier = self.get_frontier()
+        self.owned_frontier = self.get_outer()
         """
         Insert any player-specific turn initialization code here
         """
