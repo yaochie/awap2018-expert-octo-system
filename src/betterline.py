@@ -5,7 +5,7 @@ import random
 import copy
 import inspect
 from enum import Enum
-from math import ceil
+from math import ceil, floor
 
 class PlacementPolicies(Enum):
     SINGLE = 1          # place only on a single node
@@ -161,13 +161,17 @@ class Player(BasePlayer):
         if self.place_policy == PlacementPolicies.SINGLE:
             self.verify_and_place_unit(node_to_place, self.max_units)
         elif self.place_policy == PlacementPolicies.EVEN:
-            nodes = filter(lambda x: x[1] == n_neighbors, frontier_nodes)
+            nodes = [x for x in filter(lambda x: x[1] == n_neighbors, frontier_nodes)]
             remaining_units = self.max_units
-            units_per_node = ceil(self.max_units / len(nodes))
-            for node, _ in nodes:
-                to_place = min(remaining_units, units_per_node)
-                self.verify_and_place_unit(node, to_place)
-                remaining_units -= to_place
+            units_per_node = floor(self.max_units / len(nodes))
+            while remaining_units > 0:
+                for node, _ in nodes:
+                    to_place = min(remaining_units, units_per_node)
+                    self.verify_and_place_unit(node, to_place)
+                    remaining_units -= to_place
+                    if remaining_units == 0:
+                        break
+            
 
         return self.dict_moves #Returns moves built up over the phase. Do not modify!
 
