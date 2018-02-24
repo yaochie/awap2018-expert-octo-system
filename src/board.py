@@ -125,7 +125,7 @@ class Board():
         nx.draw(self.G,pos = pos,node_color = colorlist, vmin = 0, vmax = 1)
         nx.draw_networkx_labels(self.G,pos=pos,labels=nodelabels)
 
-        if os.uname().sysname == 'posix':        
+        if os.name == 'posix':        
             if not hasattr(self, 'fig'):
                 self.fig = plt.gcf()
                 self.fig.show()
