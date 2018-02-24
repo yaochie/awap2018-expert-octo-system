@@ -10,6 +10,7 @@ if(SERVER_MODE):
 from board import Board
 import importlib
 import json
+import matplotlib.pyplot as plt
 
 NUM_TURNS = 200
 NUM_PLAYERS = 4
@@ -61,6 +62,11 @@ def run_game(board, players):
         starting_locations[i] = nodes
     data["starting_locations"] = starting_locations
     score = [0] * NUM_PLAYERS
+
+    if VISUALIZE:
+        plt.figure()
+        plt.show(block=False)
+
     for i in range(NUM_TURNS):
 
         if (VISUALIZE):
