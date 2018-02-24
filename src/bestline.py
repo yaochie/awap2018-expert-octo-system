@@ -149,6 +149,8 @@ class Player(BasePlayer):
         frontier_with_units = [(n, self.board.nodes[n]['old_units']) for n in self.frontier]
         frontier_with_units = sorted(frontier_with_units, key=lambda node: node[1])
 
+        #print('front', frontier_with_units)
+
         assignments = []
         for node, units in frontier_with_units:
             for neighbor in self.board.neighbors(node):
@@ -158,6 +160,8 @@ class Player(BasePlayer):
 
         remaining_units = {k: self.board.nodes[k]['old_units'] for k in self.nodes}
 
+        #print('assn', assignments)
+        
         units_to_place = self.max_units
         units_to_be_placed = {}
         self.jobs = []
@@ -180,10 +184,15 @@ class Player(BasePlayer):
             self.jobs.append(assignments[0])
             assignments.pop(0)
 
-        if units_to_place > 0 and len(self.jobs) > 0:
-            self.jobs[0][2] += units_to_place
-            units_to_be_placed[self.jobs[0][0]] += units_to_place
-
+        print('jobs', self.jobs)
+            
+        if units_to_place > 0:
+            if len(self.jobs) > 0:
+                self.jobs[0][2] += units_to_place
+                units_to_be_placed[self.jobs[0][0]] += units_to_place
+            else:
+                units_to_be_placed[assignments[0][0]] += units_to_place
+                
         for node in units_to_be_placed:
             self.verify_and_place_unit(node, units_to_be_placed[node])
 
