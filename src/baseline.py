@@ -210,7 +210,7 @@ class Player(BasePlayer):
                     continue
                 visited.add(cur)
                 if cur in frontier:
-                    distances[cur] = dist
+                    distances[node] = dist
                     break
                 for nxt in self.board[cur]:
                     queue.append((nxt, dist + 1))
