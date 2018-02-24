@@ -101,6 +101,17 @@ class Player(BasePlayer):
         super().move_unit(start, end, amount)
         return
 
+    def get_frontier(self):
+        ids = set()
+        frontier = []
+        for node in self.nodes:
+            for neighbor in self.board[node]:
+                neighbor_id = self.board.nodes[neighbor]['owner']
+                if neighbor_id != self.player_num and neighbor_id not in ids:
+                    ids.add(neighbor_id)
+                    frontier.append(neighbor)
+        return frontier
+
     """
     Determine number of enemy units connected to this node
     min_val == True: Return minimum number of units needed to take over an adjacent node
