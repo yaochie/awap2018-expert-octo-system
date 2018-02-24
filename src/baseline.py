@@ -218,7 +218,7 @@ class Player(BasePlayer):
         
         #move to frontier
         for nodes in self.nodes:
-            if self.distance_from_frontier()[node] == 0:
+            if nodes in self.get_outer():
                 continue #already is on frontier..
 
             self_units = self.board.nodes[nodes]['old_units']            
