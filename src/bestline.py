@@ -115,13 +115,11 @@ class Player(BasePlayer):
         return
 
     def get_frontier(self):
-        ids = set()
         frontier = []
         for node in self.nodes:
             for neighbor in self.board[node]:
                 neighbor_id = self.board.nodes[neighbor]['owner']
-                if neighbor_id != self.player_num and neighbor_id not in ids:
-                    ids.add(neighbor_id)
+                if neighbor_id != self.player_num and neighbor not in frontier:
                     frontier.append(neighbor)
         return frontier
 
