@@ -154,10 +154,11 @@ class Player(BasePlayer):
         assignments = []
         for node, units in frontier_with_units:
             for neighbor in self.board.neighbors(node):
-                if neighbor['owner'] == self.player_num:
+                n = self.board.nodes[neighbor]
+                if n['owner'] == self.player_num:
                     assignments.append([neighbor, node, units + 1])
 
-        remaining_units = {k: k['old_units'] for k in self.nodes}
+        remaining_units = {k: self.board.nodes[k]['old_units'] for k in self.nodes}
 
         units_to_place = self.max_units
         units_to_be_placed = {}
@@ -173,6 +174,8 @@ class Player(BasePlayer):
                 if units_to_place < 1 - remaining_units[assignments[0][0]]:
                         break
                 units_to_place -= (1 - remaining_units[assignments[0][0]])
+                if assignments[0][0] not in units_to_be_placed:
+                    units_to_be_placed[assignments[0][0]] = 0
                 units_to_be_placed[assignments[0][0]] += (1 - remaining_units[assignments[0][0]])
                 remaining_units[assignments[0][0]] = 1
 
