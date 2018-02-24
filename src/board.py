@@ -10,6 +10,7 @@ import flower_board
 import time
 import os
 import time
+import sys
 
 class Board():
     def __init__(self, board = None):
@@ -119,13 +120,13 @@ class Board():
         for node in nodes:
             nodelabels[node] = str(node) + '\n' + str(nodelabels[node]) + '\n'
 
-        if os.name == 'posix':
+        if sys.platform == 'linux':
             plt.clf()
             
         nx.draw(self.G,pos = pos,node_color = colorlist, vmin = 0, vmax = 1)
         nx.draw_networkx_labels(self.G,pos=pos,labels=nodelabels)
 
-        if os.name == 'posix':
+        if sys.platform == 'linux':
             if not hasattr(self, 'fig'):
                 self.fig = plt.gcf()
                 self.fig.show()
