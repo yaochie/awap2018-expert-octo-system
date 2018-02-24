@@ -63,7 +63,7 @@ def run_game(board, players):
     data["starting_locations"] = starting_locations
     score = [0] * NUM_PLAYERS
 
-    if VISUALIZE:
+    if VISUALIZE and sys.platform == 'win32':
         plt.figure()
         plt.show(block=False)
 
